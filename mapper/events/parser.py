@@ -1,14 +1,19 @@
 from lxml import etree
 import sys
+import os
 from datetime import datetime
 from mapper.events.models import Event, Place, Schedule
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+
 def get_rss():
-    file = open('/home/yaraat/projects/mapper/mapper/test.xml')
+    file = open('{0}/test.xml'.format(current_dir))
     file_text = file.read()
     file.close()
 
     return file_text
+
 
 def get_events(events):
     for event in events:
@@ -106,12 +111,12 @@ def get_places(places):
                 if work_time.attrib['type'] == 'other':
                     place_dict['work_time_other'] = work_time.text
 
-        # print(place_dict)
         new_place = Place()
         for key in place_dict.keys():
             if hasattr(new_place, key):
                 setattr(new_place, key, place_dict[key])
         new_place.save()
+
 
 def get_schedule(schedule):
     for session in schedule.findall('session'):
@@ -146,5 +151,7 @@ def parser():
     get_events(events)
     get_places(places)
     get_schedule(schedule)
+
+    return 'the creation of records in the database successfully'
 
 
