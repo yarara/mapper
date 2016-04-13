@@ -12,7 +12,7 @@ class Place(models.Model):
     work_time_kassa = models.CharField(max_length=255, blank=True)
     work_time_openhours = models.CharField(max_length=255, blank=True)
     metros = models.CharField(max_length=255, blank=True)
-    image_url = models.CharField(max_length=500, blank=True)
+    image_url = models.TextField(blank=True)
     url = models.CharField(max_length=255, blank=True)
     text = models.TextField(blank=True)
     tags = models.CharField(max_length=255, blank=True)
@@ -27,8 +27,8 @@ class Event(models.Model):
     description = models.TextField(blank=True)
     text = models.TextField(blank=True)
     stage_theatre = models.CharField(max_length=255, blank=True)
-    image_url = models.CharField(max_length=500, blank=True)
-    price = models.BooleanField()
+    image_url = models.TextField(max_length=1000, blank=True)
+    price = models.BooleanField(default=False)
     places = models.ManyToManyField('Place', related_name='events', null=True, blank=True,
                                     through='Schedule')
 

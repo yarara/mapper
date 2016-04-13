@@ -1,7 +1,7 @@
 from lxml import etree
 import sys
 from datetime import datetime
-# from mapper.events.models import Event, Place, Schedule
+from mapper.events.models import Event, Place, Schedule
 
 def get_rss():
     file = open('/home/yaraat/projects/mapper/mapper/test.xml')
@@ -54,6 +54,7 @@ def get_events(events):
             # if hasattr(new_event, key):
             setattr(new_event, key, event_dict[key])
         new_event.save()
+
 
 def get_places(places):
     for place in places:
@@ -115,8 +116,8 @@ def get_places(places):
 def get_schedule(schedule):
     for session in schedule.findall('session'):
         session_dict = dict()
-        session_dict['event'] = session.attrib['event']
-        session_dict['place'] = session.attrib['place']
+        session_dict['event_id'] = session.attrib['event']
+        session_dict['place_id'] = session.attrib['place']
         session_dict['date'] = datetime.strptime(session.attrib['date'], "%Y-%m-%d").date()
         session_dict['time'] = session.attrib['time']
         if 'timetill' in session.attrib.keys():
@@ -132,12 +133,12 @@ def get_schedule(schedule):
 
 
 def parser():
-    text = get_rss()
+    xml_text = get_rss()
 
     if sys.version_info.major == 3:
-        xml = etree.fromstring(file_text.encode('utf-8'))
+        xml = etree.fromstring(xml_text.encode('utf-8'))
     else:
-        xml = etree.fromstring(file_text)
+        xml = etree.fromstring(xml_text)
 
     events = xml.find('events')
     places = xml.find('places')
