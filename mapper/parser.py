@@ -3,17 +3,12 @@ import sys
 from datetime import datetime
 # from mapper.events.models import Event, Place, Schedule
 
-def get_xml():
+def get_rss():
     file = open('/home/yaraat/projects/mapper/mapper/test.xml')
     file_text = file.read()
     file.close()
 
-    if sys.version_info.major == 3:
-        xml = etree.fromstring(file_text.encode('utf-8'))
-    else:
-        xml = etree.fromstring(file_text)
-
-    return xml
+    return file_text
 
 def get_events(events):
     for event in events:
@@ -137,7 +132,13 @@ def get_schedule(schedule):
 
 
 def parser():
-    xml = get_xml()
+    text = get_rss()
+
+    if sys.version_info.major == 3:
+        xml = etree.fromstring(file_text.encode('utf-8'))
+    else:
+        xml = etree.fromstring(file_text)
+
     events = xml.find('events')
     places = xml.find('places')
     schedule = xml.find('schedule')
