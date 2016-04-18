@@ -39,12 +39,10 @@ def recursive_parser(xml_root):
             if not res and attrib_dict:
                 res = [value for value in attrib_dict.values()]
                 use_attrib = False
-        if use_attrib:
-            r_dict['attrib'] = attrib_dict
-        if child.tag not in r_dict.keys():
-            print(r_dict.keys())
-            print(child.tag)
-            r_dict[child.tag] = tmp_dict if tmp_dict else res
+            if use_attrib:
+                r_dict['attrib'] = attrib_dict
+
+        r_dict[child.tag] = tmp_dict if tmp_dict else res
         result_dict[id] = r_dict
     return result_dict
 
