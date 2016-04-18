@@ -16,20 +16,18 @@ def get_rss():
 
 
 def recursive_parser(xml_root):
-    # print(xml_root.tag)
     result_dict = dict()
     for child in xml_root.getchildren():
         tmp_dict = dict()
         attrib_dict = dict()
-        for key in child.attrib.keys():
-            attrib_dict[key] = child.attrib[key]
-        # result_dict['{0} attrib'.format(child.tag)] = attrib_dict
+        if child.attrib:
+            for key, value in child.attrib.items():
+                attrib_dict[key] = value
         if child.getchildren():
-            child_dict = recursive_parser(child)
+            tmp_dict = recursive_parser(child)
         else:
             res = ''
             if child.getparent().tag not in ['events', 'event']:
-                # print('parent {0}'.format(child.getparent().tag))
                 for current_tag in child.getparent().getchildren():
                     if current_tag.text:
                         res += current_tag.text
@@ -40,8 +38,6 @@ def recursive_parser(xml_root):
         r_dict = {child.tag: tmp_dict, 'attrib': attrib_dict}
         result_dict['event id {0}'.format(child.attrib['id']) if child.tag=='event' else child.tag] = r_dict
     return result_dict
-    # print(result_dict)
-
 
 
 def get_events(events):
