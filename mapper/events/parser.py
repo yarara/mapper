@@ -15,6 +15,35 @@ def get_rss():
     return file_text
 
 
+def recursive_parser(xml_root):
+    # print(xml_root.tag)
+    result_dict = dict()
+    for child in xml_root.getchildren():
+        tmp_dict = dict()
+        attrib_dict = dict()
+        for key in child.attrib.keys():
+            attrib_dict[key] = child.attrib[key]
+        # result_dict['{0} attrib'.format(child.tag)] = attrib_dict
+        if child.getchildren():
+            child_dict = recursive_parser(child)
+        else:
+            res = ''
+            if child.getparent().tag not in ['events', 'event']:
+                # print('parent {0}'.format(child.getparent().tag))
+                for current_tag in child.getparent().getchildren():
+                    if current_tag.text:
+                        res += current_tag.text
+                        res +='; '
+                tmp_dict[child.tag] = res
+            else:
+                tmp_dict[child.tag] = child.text
+        r_dict = {child.tag: tmp_dict, 'attrib': attrib_dict}
+        result_dict['event id {0}'.format(child.attrib['id']) if child.tag=='event' else child.tag] = r_dict
+    return result_dict
+    # print(result_dict)
+
+
+
 def get_events(events):
     for event in events:
         event_dict = dict()
@@ -148,9 +177,13 @@ def parser():
     events = xml.find('events')
     places = xml.find('places')
     schedule = xml.find('schedule')
-    get_events(events)
-    get_places(places)
-    get_schedule(schedule)
+
+    a = recursive_parser(events)
+    for i, j in a.items():
+        print('{0} - {1}\n'.format(i, j))
+    # get_events(events)
+    # get_places(places)
+    # get_schedule(schedule)
 
     return 'the creation of records in the database successfully'
 
