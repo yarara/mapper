@@ -15,6 +15,27 @@ def get_rss():
     return file_text
 
 
+class CollectorTarget(object):
+    def __init__(self):
+        self.events = []
+
+    def start(self, tag, attrib):
+        self.events.append("start %s %r" % (tag, dict(attrib)))
+
+    def end(self, tag):
+        self.events.append("end %s" % tag)
+
+    def data(self, data):
+        self.events.append("data %r" % data)
+
+    def comment(self, text):
+        self.events.append("comment %s" % text)
+
+    def close(self):
+        self.events.append("close")
+        return "closed!"
+
+
 def recursive_parser(xml_root):
     result_dict = dict()
     for id,  child in enumerate(xml_root.getchildren()):
@@ -172,22 +193,52 @@ def get_schedule(schedule):
 def parser():
     xml_text = get_rss()
 
-    if sys.version_info.major == 3:
-        xml = etree.fromstring(xml_text.encode('utf-8'))
-    else:
-        xml = etree.fromstring(xml_text)
+    # if sys.version_info.major == 3:
+    #     xml = etree.fromstring(xml_text.encode('utf-8'))
+    # else:
+    #     xml = etree.fromstring(xml_text)
 
-    events = xml.find('events')
-    places = xml.find('places')
-    schedule = xml.find('schedule')
+    # events = xml.find('events')
+    # places = xml.find('places')
+    # schedule = xml.find('schedule')
 
-    a = recursive_parser(events)
-    for i, j in a.items():
-        print('{0} - {1}\n'.format(i, j))
+    # a = recursive_parser(events)
+    # for i, j in a.items():
+    #     print('{0} - {1}\n'.format(i, j))
     # get_events(events)
     # get_places(places)
     # get_schedule(schedule)
 
-    return 'the creation of records in the database successfully'
+    custom_parser = etree.XMLParser(target=CollectorTarget())
+    result = etree.XML(xml_text, custom_parser)
+
+    return result, custom_parser
+    # return 'the creation of records in the database successfully'
 
 
+class CustomParser(object):
+    def __init__(self):
+        xml_text = self.get_rss(current_dir)
+        if sys.version_info.major == 3:
+            xml = etree.fromstring(xml_text.encode('utf-8'))
+        else:
+            xml = etree.fromstring(xml_text)
+        self.xml = etree.fromstring(xml)
+
+    def get_rss(self, directory):
+        file = open('{0}/test.xml'.format(directory))
+        file_text = file.read()
+        file.close()
+
+        return file_text
+
+    def get_children_dict(self, element=None):
+        if not element:
+            element = self.xml
+        return {child.gat: child.getchildren() for child in element.getchildren()}
+
+    def parse(self):
+        pass
+
+    def parse_element(self):
+        elements = self.get_children_dict()
