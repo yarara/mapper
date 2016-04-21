@@ -229,16 +229,26 @@ class CustomParser(object):
         file = open('{0}/test.xml'.format(directory))
         file_text = file.read()
         file.close()
-
         return file_text
 
-    def get_children_dict(self, element=None):
-        if not element:
-            element = self.xml
+    def get_children_dict(self, element):
         return {child.gat: child.getchildren() for child in element.getchildren()}
 
-    def parse(self):
-        pass
+    def get_parent_dict(self):
+        return self.get_children_dict(self.xml)
 
-    def parse_element(self):
-        elements = self.get_children_dict()
+    def parse(self):
+        parent_elements = self.get_parent_dict()
+        for parent in parent_elements:
+            self.parse_element(parent)
+
+    def parse_element(self, element):
+        elements = self.get_children_dict(element)
+        for elem in elements:
+            tmp_dict = dict()
+            if elem.attrib:
+                tmp_dict = elem.attrib
+            if elem.get_children():
+                tmp_dict[elem.tag] = '; '.join([child.tag for child in elem.get_children])
+
+            
